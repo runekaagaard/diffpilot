@@ -77,12 +77,6 @@ async def get_stats():
         "uptime": await system.get_uptime()
     }</span></pre>
                     </div>
-                    <div class="card-footer py-2">
-                        <div class="d-flex gap-2">
-                            <span class="badge bg-primary">api</span>
-                            <span class="badge bg-secondary">python</span>
-                        </div>
-                    </div>
                 </div>
             </div>
 
@@ -118,12 +112,6 @@ CREATE TABLE profiles (
 CREATE INDEX idx_users_username ON users(username);
 CREATE INDEX idx_users_email ON users(email);</span></pre>
                     </div>
-                    <div class="card-footer py-2">
-                        <div class="d-flex gap-2">
-                            <span class="badge bg-warning">database</span>
-                            <span class="badge bg-info">sql</span>
-                        </div>
-                    </div>
                 </div>
             </div>
 
@@ -154,12 +142,6 @@ CREATE INDEX idx_users_email ON users(email);</span></pre>
         assert "disk_usage" in data
         assert isinstance(data["network_stats"], dict)
         assert isinstance(data["uptime"], float)</span></pre>
-                    </div>
-                    <div class="card-footer py-2">
-                        <div class="d-flex gap-2">
-                            <span class="badge bg-danger">tests</span>
-                            <span class="badge bg-secondary">python</span>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -199,25 +181,27 @@ Response:
 }
 ```</span></pre>
                     </div>
-                    <div class="card-footer py-2">
-                        <div class="d-flex gap-2">
-                            <span class="badge bg-success">docs</span>
-                            <span class="badge bg-info">markdown</span>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
     </main>
 
-    <footer class="fixed-bottom bg-primary">
+    <footer class="fixed-bottom bg-primary py-1">
         <div class="container-fluid">
-            <div class="row justify-content-center">
-                <div class="col-auto py-2">
+            <div class="row justify-content-between align-items-center">
+                <div class="col-auto">
                     <div class="d-flex align-items-center gap-3">
-                        <a class="navbar-brand text-light mb-0" href="#">DiffPilot</a>
-                        <span class="text-light">main...feature-branch</span>
-                        <button class="btn btn-sm btn-outline-light" type="button">Refresh</button>
+                        <a class="navbar-brand text-light mb-0 h6" href="#">DiffPilot</a>
+                        <small class="text-light">main...feature-branch</small>
+                        <button class="btn btn-sm btn-outline-light py-0" type="button">Refresh</button>
+                    </div>
+                </div>
+                <div class="col-auto">
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-sm btn-outline-light py-0 active">python</button>
+                        <button class="btn btn-sm btn-outline-light py-0">sql</button>
+                        <button class="btn btn-sm btn-outline-light py-0">docs</button>
+                        <button class="btn btn-sm btn-outline-light py-0">tests</button>
                     </div>
                 </div>
             </div>
