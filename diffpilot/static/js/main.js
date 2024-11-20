@@ -1,6 +1,6 @@
 let currentColumns = 3;
-const MIN_COLUMNS = 2;
-const MAX_COLUMNS = 4;
+const MIN_COLUMNS = 1;
+const MAX_COLUMNS = 100;
 
 function updateColumns(change) {
     const newColumns = Math.min(Math.max(currentColumns + change, MIN_COLUMNS), MAX_COLUMNS);
