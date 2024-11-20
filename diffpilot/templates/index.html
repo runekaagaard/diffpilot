@@ -1,10 +1,104 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="row">
+<div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4">
+    <!-- Models changes -->
     <div class="col">
-        <h1>Welcome to DiffPilot</h1>
-        <p class="lead">A local web interface for viewing git diffs across multiple columns.</p>
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center py-2">
+                <div>
+                    <h6 class="mb-0">users/models.py</h6>
+                    <small class="file-path">apps/users/models.py</small>
+                </div>
+                <span class="badge bg-warning">Modified</span>
+            </div>
+            <div class="card-body p-0">
+                <div class="p-2 diff-info">@@ -15,6 +15,12 @@ class User(models.Model):</div>
+                <pre class="p-3">
+    def __str__(self):
+        return self.username
+
+<span class="diff-add">    @property
+    def full_name(self):
+        return f"{self.first_name} {self.last_name}"
+
+    def get_display_name(self):
+        return self.full_name or self.username</span>
+
+    class Meta:
+        ordering = ['username']</pre>
+            </div>
+            <div class="card-footer py-2">
+                <div class="d-flex gap-2">
+                    <span class="badge bg-primary">models</span>
+                    <span class="badge bg-secondary">python</span>
+                    <span class="badge bg-info">core</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Template changes -->
+    <div class="col">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center py-2">
+                <div>
+                    <h6 class="mb-0">profile.html</h6>
+                    <small class="file-path">templates/users/profile.html</small>
+                </div>
+                <span class="badge bg-warning">Modified</span>
+            </div>
+            <div class="card-body p-0">
+                <div class="p-2 diff-info">@@ -24,7 +24,7 @@</div>
+                <pre class="p-3">
+    &lt;div class="profile-header"&gt;
+<span class="diff-del">        &lt;h1&gt;{{ user.username }}&lt;/h1&gt;</span>
+<span class="diff-add">        &lt;h1&gt;{{ user.get_display_name }}&lt;/h1&gt;</span>
+        &lt;p class="text-muted"&gt;
+            Member since {{ user.date_joined|date }}
+        &lt;/p&gt;
+    &lt;/div&gt;</pre>
+            </div>
+            <div class="card-footer py-2">
+                <div class="d-flex gap-2">
+                    <span class="badge bg-success">template</span>
+                    <span class="badge bg-warning">html</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Test changes -->
+    <div class="col">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center py-2">
+                <div>
+                    <h6 class="mb-0">test_models.py</h6>
+                    <small class="file-path">tests/users/test_models.py</small>
+                </div>
+                <span class="badge bg-success">Added</span>
+            </div>
+            <div class="card-body p-0">
+                <pre class="p-3"><span class="diff-add">def test_user_display_name():
+    user = User.objects.create(
+        username="johndoe",
+        first_name="John",
+        last_name="Doe"
+    )
+    assert user.get_display_name() == "John Doe"
+
+    user_no_name = User.objects.create(
+        username="testuser"
+    )
+    assert user_no_name.get_display_name() == "testuser"</span></pre>
+            </div>
+            <div class="card-footer py-2">
+                <div class="d-flex gap-2">
+                    <span class="badge bg-danger">tests</span>
+                    <span class="badge bg-secondary">python</span>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 {% endblock %}
