@@ -11,10 +11,37 @@
         .diff-add { background-color: #e6ffe6; color: #1e4620; }
         .diff-del { background-color: #ffe6e6; color: #461e1e; }
         .diff-info { color: #666; font-size: 0.9em; background: #f8f9fa; }
-        .card { margin-bottom: 1rem; }
+        .card { margin-bottom: 1rem; break-inside: avoid; }
         .card-header { background-color: #f8f9fa; }
         .file-path { font-family: monospace; font-size: 0.9em; color: #666; }
         .card pre { max-height: 400px; overflow-y: auto; }
+        
+        .masonry-grid {
+            display: grid;
+            grid-auto-flow: column;
+            grid-template-rows: repeat(10, auto);
+            grid-auto-columns: minmax(0, 1fr);
+            gap: 1rem;
+        }
+        
+        @media (max-width: 768px) {
+            .masonry-grid {
+                grid-template-rows: auto;
+                grid-auto-flow: row;
+            }
+        }
+        
+        @media (min-width: 769px) and (max-width: 1200px) {
+            .masonry-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (min-width: 1201px) {
+            .masonry-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
     </style>
 </head>
 <body>
@@ -33,7 +60,7 @@
     </nav>
 
     <main class="container-fluid p-4">
-        <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4">
+        <div class="masonry-grid">
             <!-- Models changes -->
             <div class="col">
                 <div class="card h-100">
