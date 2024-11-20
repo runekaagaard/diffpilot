@@ -19,6 +19,9 @@
         .grid-item { width: calc(33.333% - 1rem); margin: 0.5rem; }
         @media (max-width: 1200px) { .grid-item { width: calc(50% - 1rem); } }
         @media (max-width: 768px) { .grid-item { width: calc(100% - 1rem); } }
+        .card pre.small { max-height: 150px; }
+        .card pre.medium { max-height: 250px; }
+        .card pre.large { max-height: 350px; }
     </style>
 </head>
 <body>
@@ -39,9 +42,193 @@
     <script src="https://unpkg.com/masonry-layout@4/dist/masonry.pkgd.min.js"></script>
     <main class="container-fluid p-4">
         <div class="grid" data-masonry='{"itemSelector": ".grid-item", "percentPosition": true}'>
-            <!-- Models changes -->
+            <!-- Configuration changes -->
             <div class="grid-item">
-                <div class="card h-100">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center py-2">
+                        <div>
+                            <h6 class="mb-0">config.yaml</h6>
+                            <small class="file-path">config/settings.yaml</small>
+                        </div>
+                        <span class="badge bg-warning">Modified</span>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="p-2 diff-info">@@ -10,6 +10,15 @@</div>
+                        <pre class="p-3 small">
+settings:
+  debug: false
+  cache_enabled: true
+<span class="diff-add">  logging:
+    level: INFO
+    format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    handlers:
+      - console
+      - file</span></pre>
+                    </div>
+                    <div class="card-footer py-2">
+                        <div class="d-flex gap-2">
+                            <span class="badge bg-info">config</span>
+                            <span class="badge bg-secondary">yaml</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- API changes -->
+            <div class="grid-item">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center py-2">
+                        <div>
+                            <h6 class="mb-0">api.py</h6>
+                            <small class="file-path">src/api/endpoints.py</small>
+                        </div>
+                        <span class="badge bg-success">Added</span>
+                    </div>
+                    <div class="card-body p-0">
+                        <pre class="p-3 medium"><span class="diff-add">@router.get("/stats")
+async def get_stats():
+    """Return system statistics."""
+    return {
+        "cpu_usage": await system.get_cpu_usage(),
+        "memory_usage": await system.get_memory_usage(),
+        "disk_usage": await system.get_disk_usage(),
+        "network_stats": await system.get_network_stats(),
+        "uptime": await system.get_uptime()
+    }</span></pre>
+                    </div>
+                    <div class="card-footer py-2">
+                        <div class="d-flex gap-2">
+                            <span class="badge bg-primary">api</span>
+                            <span class="badge bg-secondary">python</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Database changes -->
+            <div class="grid-item">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center py-2">
+                        <div>
+                            <h6 class="mb-0">schema.sql</h6>
+                            <small class="file-path">db/migrations/001_init.sql</small>
+                        </div>
+                        <span class="badge bg-success">Added</span>
+                    </div>
+                    <div class="card-body p-0">
+                        <pre class="p-3 large"><span class="diff-add">CREATE TABLE users (
+    id SERIAL PRIMARY KEY,
+    username VARCHAR(100) NOT NULL UNIQUE,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    password_hash VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE profiles (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+    full_name VARCHAR(255),
+    bio TEXT,
+    avatar_url VARCHAR(255),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX idx_users_username ON users(username);
+CREATE INDEX idx_users_email ON users(email);</span></pre>
+                    </div>
+                    <div class="card-footer py-2">
+                        <div class="d-flex gap-2">
+                            <span class="badge bg-warning">database</span>
+                            <span class="badge bg-info">sql</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Test changes -->
+            <div class="grid-item">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center py-2">
+                        <div>
+                            <h6 class="mb-0">test_api.py</h6>
+                            <small class="file-path">tests/api/test_endpoints.py</small>
+                        </div>
+                        <span class="badge bg-warning">Modified</span>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="p-2 diff-info">@@ -45,6 +45,20 @@</div>
+                        <pre class="p-3 medium">
+    async def test_get_user():
+        response = await client.get("/api/users/1")
+        assert response.status_code == 200
+<span class="diff-add">
+    @pytest.mark.asyncio
+    async def test_get_stats():
+        response = await client.get("/api/stats")
+        assert response.status_code == 200
+        data = response.json()
+        
+        assert "cpu_usage" in data
+        assert "memory_usage" in data
+        assert "disk_usage" in data
+        assert isinstance(data["network_stats"], dict)
+        assert isinstance(data["uptime"], float)</span></pre>
+                    </div>
+                    <div class="card-footer py-2">
+                        <div class="d-flex gap-2">
+                            <span class="badge bg-danger">tests</span>
+                            <span class="badge bg-secondary">python</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Documentation changes -->
+            <div class="grid-item">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center py-2">
+                        <div>
+                            <h6 class="mb-0">API.md</h6>
+                            <small class="file-path">docs/API.md</small>
+                        </div>
+                        <span class="badge bg-warning">Modified</span>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="p-2 diff-info">@@ -120,6 +120,25 @@</div>
+                        <pre class="p-3 small">
+## Endpoints
+
+<span class="diff-add">### GET /api/stats
+
+Returns current system statistics.
+
+Response:
+```json
+{
+    "cpu_usage": 45.2,
+    "memory_usage": {
+        "total": 16384,
+        "used": 8192,
+        "free": 8192
+    },
+    "disk_usage": {
+        "total": 512000,
+        "used": 128000,
+        "free": 384000
+    }
+}
+```</span></pre>
+                    </div>
+                    <div class="card-footer py-2">
+                        <div class="d-flex gap-2">
+                            <span class="badge bg-success">docs</span>
+                            <span class="badge bg-info">markdown</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
                     <div class="card-header d-flex justify-content-between align-items-center py-2">
                         <div>
                             <h6 class="mb-0">users/models.py</h6>
