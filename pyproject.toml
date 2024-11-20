@@ -1,0 +1,17 @@
+[project]
+name = "diffpilot"
+version = "0.1.0"
+description = "A local web interface for viewing git diffs across multiple columns"
+authors = []
+dependencies = [
+    "fastapi",
+    "uvicorn[standard]",
+    "jinja2",
+    "aiofiles",
+    "pyyaml",
+    "python-multipart",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
