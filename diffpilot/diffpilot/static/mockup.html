@@ -14,30 +14,13 @@
         .card { margin-bottom: 1rem; }
         .card-header { background-color: #f8f9fa; }
         .file-path { font-family: monospace; font-size: 0.9em; color: #666; }
-        .card pre { max-height: 400px; overflow-y: auto; }
         .grid { margin: 0 -0.5rem; }
         .grid-item { width: calc(33.333% - 1rem); margin: 0.5rem; }
         @media (max-width: 1200px) { .grid-item { width: calc(50% - 1rem); } }
         @media (max-width: 768px) { .grid-item { width: calc(100% - 1rem); } }
-        .card pre.small { max-height: 150px; }
-        .card pre.medium { max-height: 250px; }
-        .card pre.large { max-height: 350px; }
     </style>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="#">DiffPilot</a>
-            <div class="d-flex gap-2">
-                <span class="navbar-text">
-                    <small class="text-light">main...feature-branch</small>
-                </span>
-                <button class="btn btn-sm btn-outline-light" type="button">
-                    Refresh
-                </button>
-            </div>
-        </div>
-    </nav>
 
     <script src="https://unpkg.com/masonry-layout@4/dist/masonry.pkgd.min.js"></script>
     <main class="container-fluid p-4">
@@ -48,7 +31,6 @@
                     <div class="card-header d-flex justify-content-between align-items-center py-2">
                         <div>
                             <h6 class="mb-0">config.yaml</h6>
-                            <small class="file-path">config/settings.yaml</small>
                         </div>
                         <span class="badge bg-warning">Modified</span>
                     </div>
@@ -231,6 +213,20 @@ Response:
             </div>
         </div>
     </main>
+
+    <footer class="fixed-bottom bg-primary">
+        <div class="container-fluid">
+            <div class="row justify-content-center">
+                <div class="col-auto py-2">
+                    <div class="d-flex align-items-center gap-3">
+                        <a class="navbar-brand text-light mb-0" href="#">DiffPilot</a>
+                        <span class="text-light">main...feature-branch</span>
+                        <button class="btn btn-sm btn-outline-light" type="button">Refresh</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
