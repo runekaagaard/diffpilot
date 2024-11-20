@@ -1,0 +1,123 @@
+DIFFPILOT(1)                         User Commands                         DIFFPILOT(1)
+
+NAME
+       diffpilot - intelligent Git diff visualization with file grouping
+
+SYNOPSIS
+       diffpilot [OPTIONS] path/to/git/project
+
+DESCRIPTION
+       Diffpilot serves a local web interface for viewing git diffs across multiple
+       columns on large monitors. Files can be grouped and sorted based on patterns
+       and priorities, and tagged for better overview. All configuration is done in
+       the diffpilot.yaml file in your git repository.
+
+OPTIONS
+       -p, --port=NUMBER
+              Specify the port number for the web server (default: 3333)
+
+       -n, --interval=SECONDS
+              Refresh interval in seconds, can be fractional (default: 2.0)
+
+       --dark-mode=on|off
+              Enable or disable dark mode (default: off)
+
+       --diff-command=COMMAND
+              Custom diff command (default: "git diff --color=never")
+              Example: --diff-command="git diff master...HEAD"
+              Example: --diff-command="git diff --cached"
+
+       -h, --help
+              Display help information and exit
+
+       --no-open
+              Don't automatically open browser window on startup
+
+CONFIGURATION
+       The configuration file (diffpilot.yaml) uses YAML format with two main 
+       sections: file_groups and tags.
+
+       file_groups:
+              List of group definitions containing:
+              - title: Group display name
+              - glob: File matching pattern
+              - priority: Sort order (higher numbers first)
+              - font_size: CSS font-size value
+              - tags: Array of tag names
+
+       tags:
+              Tag definitions containing:
+              - css_class: CSS class name for styling
+
+       extra_css:
+              Optional path to additional CSS file
+
+TAG STYLING
+       Tags are rendered as Bootstrap badges. Each tag has a default 'badge' class
+       and can be customized with additional classes or through custom CSS. For
+       available badge styles see the Badges section at 
+       https://bootswatch.com/flatly/
+
+EXAMPLE CONFIGURATION
+       file_groups:
+         - title: "Django Models"
+           glob: "*/models.py"
+           priority: 10
+           font_size: "90%"
+           tags: [models, python, core]
+         - title: "Tests"
+           glob: "*/tests/*.py"
+           priority: 8
+           font_size: "85%"
+           tags: [tests, python]
+
+       tags:
+         models:
+           css_class: "bg-primary"        # Uses Bootstrap's primary background
+         python:
+           css_class: "custom-python"     # Class from custom CSS file
+
+       extra_css: "./diffpilot.css"
+
+GLOB PATTERNS
+       Supports standard glob patterns:
+       *        Matches any characters except /
+       **       Matches any characters including /
+       ?        Matches single character
+       [abc]    Matches one character in brackets
+
+EXAMPLES
+       Start server for current git project:
+              $ diffpilot .
+
+       Start with 5 second refresh:
+              $ diffpilot -n 5 .
+
+       Start on specific port:
+              $ diffpilot -p 8080 /path/to/project
+
+       Show staged changes:
+              $ diffpilot . --diff-command="git diff --cached"
+
+       Compare with main branch:
+              $ diffpilot . --diff-command="git diff main..."
+
+       Start with dark mode:
+              $ diffpilot --dark-mode=on /path/to/project
+
+FILES
+       ./diffpilot.yaml
+              Configuration file in repository root
+
+EXIT STATUS
+       0      Success
+       1      Various errors
+       2      Configuration error
+
+BUGS
+       Report bugs to: https://github.com/runekaagaard/diffpilot/issues
+
+SEE ALSO
+       git-diff(1), git(1)
+
+Diffpilot 1.0                        November 2024                         DIFFPILOT(1)
