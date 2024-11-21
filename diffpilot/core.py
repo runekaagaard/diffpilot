@@ -24,9 +24,45 @@ def get_language(filename: str) -> str:
         '.md': 'markdown',
         '.sh': 'bash',
         '.bash': 'bash',
+        '.rst': 'rest',
     }
     ext = Path(filename).suffix.lower()
     return ext_map.get(ext, 'diff')
+
+def delete_metadata(diff_text: str) -> str:
+    """
+    Remove git diff metadata from the beginning of the diff.
+    Handles various edge cases like binary files and permission changes.
+    
+    Args:
+        diff_text: Raw git diff output for a single file
+        
+    Returns:
+        Cleaned diff text without metadata
+    """
+    lines = diff_text.splitlines(keepends=True)
+    if not lines:
+        return ""
+    
+    # Handle special cases first
+    for line in lines:
+        if line.startswith('Binary files') or line.startswith('Only in'):
+            return diff_text  # Return full text for special diffs
+    
+    # Find the position after the last metadata line
+    for i, line in enumerate(lines):
+        # Standard diff metadata ends with +++ line
+        if line.startswith('+++'):
+            return ''.join(lines[i + 1:])
+        # But some diffs might be different:
+        # - Mode changes only show mode lines
+        # - New files might not have --- line
+        # - Deleted files might not have +++ line
+        elif line.startswith('@@'):
+            return ''.join(lines[i:])
+            
+    # If we didn't find any markers, return original
+    return diff_text
 
 def parse_diff(diff_text: str) -> Dict[str, str]:
     """Parse a single diff text into a structured format."""
@@ -51,12 +87,17 @@ def parse_diff(diff_text: str) -> Dict[str, str]:
         elif line.startswith('deleted file mode'):
             status = "Deleted"
             break
+        elif line.startswith("@@"):
+            break
+    
+    # Clean the diff content
+    cleaned_content = delete_metadata(diff_text)
     
     return {
         'filename': filename,
         'language': language,
         'status': status,
-        'content': diff_text  # Keep the full diff including metadata
+        'content': cleaned_content
     }
 
 def run_diff_command(command: str, git_root: Path) -> List[Dict[str, str]]:
