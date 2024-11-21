@@ -3,7 +3,7 @@ from fastapi import FastAPI, Request
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from pathlib import Path
-from .core import run_diff_command
+from .core import run_diff_command, load_config
 
 app = FastAPI(title="DiffPilot")
 
@@ -37,8 +37,12 @@ async def home(request: Request):
             config.diff_command,
             config.git_project_path
         )
+        # Load config to get tag styles
+        yaml_config = load_config(config.git_project_path)
+        tags_config = yaml_config.get('tags', {})
     except Exception as e:
         diffs = [{'filename': 'Error', 'content': str(e)}]
+        tags_config = {}
 
     return templates.TemplateResponse(
         "index.html",
@@ -49,5 +53,6 @@ async def home(request: Request):
             "refresh_interval": request.app.state.config.refresh_interval,
             "git_project_path": request.app.state.config.git_project_path,
             "diffs": diffs,
+            "tags_config": tags_config,
         }
     )
