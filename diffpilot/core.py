@@ -1,8 +1,10 @@
 import subprocess
 import os
 import logging
-from typing import List, Dict
+from typing import List, Dict, Union, Optional
 from pathlib import Path
+import yaml
+from fnmatch import fnmatch
 
 logger = logging.getLogger("uvicorn")
 
@@ -101,19 +103,7 @@ def parse_diff(diff_text: str) -> Dict[str, str]:
     }
 
 def run_diff_command(command: str, git_root: Path) -> List[Dict[str, str]]:
-    """
-    Run the git diff command and split output by file.
-    
-    Args:
-        command: The diff command to run (e.g. "git diff" or "git diff | grep foo")
-        git_root: Path to the git repository root
-        
-    Returns:
-        List of dicts containing filename and content for each file in the diff
-        
-    Raises:
-        subprocess.SubprocessError: If the command fails
-    """
+    """Run the git diff command and split output by file."""
     try:
         # Save current working directory
         original_cwd = os.getcwd()
@@ -145,27 +135,26 @@ def run_diff_command(command: str, git_root: Path) -> List[Dict[str, str]]:
         if not stdout.strip():
             return []
             
+        # Parse all diffs first
         diffs = []
         current_diff = []
         
         for line in stdout.splitlines(keepends=True):
             if line.startswith('diff --git') and current_diff:
-                # Parse and save the previous file's diff
                 parsed_diff = parse_diff(''.join(current_diff))
                 if parsed_diff:
                     diffs.append(parsed_diff)
-                # Start new diff
                 current_diff = [line]
             else:
                 current_diff.append(line)
             
-        # Parse and add the last file's diff
         if current_diff:
             parsed_diff = parse_diff(''.join(current_diff))
             if parsed_diff:
                 diffs.append(parsed_diff)
-            
-        return diffs
+        
+        # Prioritize and sort the diffs
+        return prioritize_diffs(diffs, git_root)
         
     except subprocess.SubprocessError as e:
         logger.error(f"Failed to run diff command: {e}")
@@ -178,3 +167,70 @@ def run_diff_command(command: str, git_root: Path) -> List[Dict[str, str]]:
     finally:
         # Always restore original working directory
         os.chdir(original_cwd)
+
+def load_config(git_root: Path) -> Dict:
+    """Load diffpilot.yaml configuration file"""
+    config_path = git_root / "diffpilot.yaml"
+    if not config_path.exists():
+        return {"file_groups": [], "tags": {}}
+    
+    with open(config_path) as f:
+        return yaml.safe_load(f)
+
+def match_file_group(filename: str, group: Dict) -> bool:
+    """Check if filename matches group's glob pattern(s)"""
+    glob_patterns = group['glob']
+    if isinstance(glob_patterns, str):
+        glob_patterns = [glob_patterns]
+    
+    return any(fnmatch(filename, pattern) for pattern in glob_patterns)
+
+def find_matching_group(filename: str, file_groups: List[Dict]) -> Optional[Dict]:
+    """Find the highest priority group that matches the filename"""
+    matching_groups = [
+        group for group in file_groups 
+        if match_file_group(filename, group)
+    ]
+    
+    if not matching_groups:
+        return None
+        
+    # Return the group with highest priority
+    return max(matching_groups, key=lambda g: g.get('priority', 0))
+
+def prioritize_diffs(diffs: List[Dict], git_root: Path) -> List[Dict]:
+    """
+    Prioritize diffs based on diffpilot.yaml configuration.
+    
+    Args:
+        diffs: List of diffs from run_diff_command
+        git_root: Path to git repository root
+        
+    Returns:
+        Sorted list of diffs with added priority and tags
+    """
+    config = load_config(git_root)
+    file_groups = config.get('file_groups', [])
+    tags_config = config.get('tags', {})
+    
+    # Enhance diffs with priority and tags
+    enhanced_diffs = []
+    for diff in diffs:
+        filename = diff['filename']
+        matching_group = find_matching_group(filename, file_groups)
+        
+        if matching_group:
+            # Add group information to diff
+            diff['priority'] = matching_group.get('priority', 0)
+            diff['tags'] = matching_group.get('tags', [])
+            diff['group_title'] = matching_group.get('title', '')
+        else:
+            # Default values for unmatched files
+            diff['priority'] = 0
+            diff['tags'] = []
+            diff['group_title'] = 'Ungrouped'
+            
+        enhanced_diffs.append(diff)
+    
+    # Sort by priority (highest first)
+    return sorted(enhanced_diffs, key=lambda x: (-x['priority'], x['filename']))
