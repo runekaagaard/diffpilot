@@ -6,31 +6,45 @@ from pathlib import Path
 
 logger = logging.getLogger("uvicorn")
 
+def get_language(filename: str) -> str:
+    """Determine the programming language based on file extension"""
+    ext_map = {
+        '.py': 'python',
+        '.js': 'javascript',
+        '.jsx': 'javascript',
+        '.ts': 'typescript',
+        '.tsx': 'typescript',
+        '.html': 'markup',
+        '.xml': 'markup',
+        '.css': 'css',
+        '.scss': 'scss',
+        '.yaml': 'yaml',
+        '.yml': 'yaml',
+        '.json': 'json',
+        '.md': 'markdown',
+        '.sh': 'bash',
+        '.bash': 'bash',
+    }
+    ext = Path(filename).suffix.lower()
+    return ext_map.get(ext, 'diff')
+
 def parse_diff(diff_text: str) -> Dict[str, str]:
-    """
-    Parse a single diff text into a structured format.
-    
-    Args:
-        diff_text: The complete diff text for a single file
-        
-    Returns:
-        Dict containing filename and content
-    """
+    """Parse a single diff text into a structured format."""
     lines = diff_text.splitlines(keepends=True)
     if not lines:
         return None
         
-    # First line should be "diff --git a/path/to/file b/path/to/file"
     first_line = lines[0]
     if not first_line.startswith('diff --git'):
         return None
         
-    # Extract filename from the b/path/to/file part
     filename = first_line.split()[-1].lstrip('b/')
+    language = get_language(filename)
     
     return {
         'filename': filename,
-        'content': ''.join(lines)
+        'language': language,
+        'content': diff_text
     }
 
 def run_diff_command(command: str, git_root: Path) -> List[Dict[str, str]]:
