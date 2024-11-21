@@ -38,13 +38,25 @@ def parse_diff(diff_text: str) -> Dict[str, str]:
     if not first_line.startswith('diff --git'):
         return None
         
+    # Extract filename from the b/path/to/file part
     filename = first_line.split()[-1].lstrip('b/')
     language = get_language(filename)
+    
+    # Detect file status by looking at the actual diff content
+    status = "Modified"  # Default status
+    for line in lines:
+        if line.startswith('new file mode'):
+            status = "Added"
+            break
+        elif line.startswith('deleted file mode'):
+            status = "Deleted"
+            break
     
     return {
         'filename': filename,
         'language': language,
-        'content': diff_text
+        'status': status,
+        'content': diff_text  # Keep the full diff including metadata
     }
 
 def run_diff_command(command: str, git_root: Path) -> List[Dict[str, str]]:

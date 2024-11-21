@@ -1,7 +1,18 @@
 <div class="grid-item mb-2 pe-2">
     <div class="card">
         <div class="card-header d-flex justify-content-between align-items-center p-2">
-            {{ diff.filename }}
+            <div>
+                <h6 class="mb-0">{{ diff.filename }}</h6>
+            </div>
+            <div>
+                {% if diff.status == "Added" %}
+                    <span class="badge bg-success">Added</span>
+                {% elif diff.status == "Deleted" %}
+                    <span class="badge bg-danger">Deleted</span>
+                {% else %}
+                    <span class="badge bg-warning">Modified</span>
+                {% endif %}
+            </div>
         </div>
         <div class="card-body p-0">
             <pre><code class="language-diff-{{ diff.language }} diff-highlight">{{ diff.content }}</code></pre>
