@@ -19,13 +19,20 @@ function updateColumns(change) {
         currentColumns = newColumns;
         setColumns(currentColumns);
         updateColumnControls();
+        if (masonryInstance) {
+            setTimeout(() => masonryInstance.layout(), 100);
+        }
     }
 }
 
 function updateColumnControls() {
-    document.getElementById('decreaseColumns').disabled = currentColumns <= MIN_COLUMNS;
-    document.getElementById('increaseColumns').disabled = currentColumns >= MAX_COLUMNS;
-    document.getElementById('columnCount').textContent = currentColumns;
+    const decreaseBtn = document.getElementById('decreaseColumns');
+    const increaseBtn = document.getElementById('increaseColumns');
+    const countDisplay = document.getElementById('columnCount');
+    
+    if (decreaseBtn) decreaseBtn.disabled = currentColumns <= MIN_COLUMNS;
+    if (increaseBtn) increaseBtn.disabled = currentColumns >= MAX_COLUMNS;
+    if (countDisplay) countDisplay.textContent = currentColumns;
 }
 
 function setColumns(cols) {
@@ -35,11 +42,6 @@ function setColumns(cols) {
     items.forEach(item => {
         item.style.width = width;
     });
-    
-    // Relayout Masonry
-    if (masonryInstance) {
-        masonryInstance.layout();
-    }
 }
 
 // Initialize on page load
