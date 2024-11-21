@@ -52,8 +52,8 @@ async def home(request: Request):
             "dark_mode": request.app.state.config.is_dark_mode,
             "refresh_interval": request.app.state.config.refresh_interval,
             "git_project_path": request.app.state.config.git_project_path,
-            "diff_command": request.app.state.config.diff_command,
             "diffs": diffs,
             "tags_config": tags_config,
+            "diff_command": config.diff_command,
         }
     )
