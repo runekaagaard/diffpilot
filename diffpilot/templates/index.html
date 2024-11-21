@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="grid" data-masonry='{"itemSelector": ".grid-item", "percentPosition": true, "transitionDuration": "0.2s"}'>
+<div class="grid">
     {% for diff in diffs %}
         {% include "diff.html" %}
     {% endfor %}

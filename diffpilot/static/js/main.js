@@ -1,6 +1,17 @@
 let currentColumns = 3;
 const MIN_COLUMNS = 1;
 const MAX_COLUMNS = 100;
+let masonryInstance = null;
+
+function initMasonry() {
+    const grid = document.querySelector('.grid');
+    masonryInstance = new Masonry(grid, {
+        itemSelector: '.grid-item',
+        percentPosition: true,
+        columnWidth: '.grid-item',
+        transitionDuration: '0.2s'
+    });
+}
 
 function updateColumns(change) {
     const newColumns = Math.min(Math.max(currentColumns + change, MIN_COLUMNS), MAX_COLUMNS);
@@ -25,16 +36,22 @@ function setColumns(cols) {
         item.style.width = width;
     });
     
-    // Force Masonry to relayout
-    const grid = document.querySelector('.grid');
-    const masonry = Masonry.data(grid);
-    if (masonry) {
-        masonry.layout();
+    // Relayout Masonry
+    if (masonryInstance) {
+        masonryInstance.layout();
     }
 }
 
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', function() {
+    initMasonry();
     setColumns(currentColumns);
     updateColumnControls();
+});
+
+// Re-layout after all images and content are loaded
+window.addEventListener('load', function() {
+    if (masonryInstance) {
+        masonryInstance.layout();
+    }
 });

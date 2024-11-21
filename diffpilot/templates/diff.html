@@ -1,12 +1,10 @@
-<div class="grid-item">
+<div class="grid-item mb-2 pe-2">
     <div class="card">
         <div class="card-header d-flex justify-content-between align-items-center p-2">
-            <div>
-                <h6 class="mb-0">{{ diff.filename }}</h6>
-            </div>
+            {{ diff.filename }}
         </div>
-        <div class="card-body p-2">
-            <pre><code class="language-diff-python diff-highlight">{{ diff.content }}</code></pre>
+        <div class="card-body p-0">
+            <pre><code class="language-diff-{{ diff.language }} diff-highlight">{{ diff.content }}</code></pre>
         </div>
     </div>
 </div>

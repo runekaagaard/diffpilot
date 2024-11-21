@@ -1,20 +1,6 @@
-
 /* Remove code element styling */
-code[class*="language-"], pre[class*="language-"] {
-background: none;
-padding: 0;
-margin: 0;
-box-shadow: none;
-border: none;
-}
+code[class*="language-"], pre[class*="language-"] { background: none; padding: 0; margin: 0; box-shadow: none; border: none; }
 
-
-pre { margin: 0; font-size: 0.9em; overflow-x: auto; scrollbar-width: none; }
+/* Remove scrollbar on code blocks */
+pre { overflow-x: auto; scrollbar-width: none; }
 pre::-webkit-scrollbar { display: none; }
-.card { margin-bottom: 0; background: #2c2c2c; border-color: #444; }
-.card-header { background-color: #222; border-bottom-color: #444; }
-body { background-color: #222; color: #eee; }
-.grid { margin: 0; }
-.grid-item { width: 33.333%; padding: 0.25rem; }
-@media (max-width: 1200px) { .grid-item { width: calc(50% - 1rem); } }
-@media (max-width: 768px) { .grid-item { width: calc(100% - 1rem); } }
