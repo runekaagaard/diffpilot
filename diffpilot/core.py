@@ -188,21 +188,17 @@ def match_file_group(filename: str, group: Dict) -> bool:
     return any(fnmatch(filename, pattern) for pattern in glob_patterns)
 
 def find_matching_group(filename: str, file_groups: List[Dict]) -> Optional[Dict]:
-    """Find the highest priority group that matches the filename"""
-    matching_groups = [
-        group for group in file_groups 
-        if match_file_group(filename, group)
-    ]
-    
-    if not matching_groups:
-        return None
-        
-    # Return the group with highest priority
-    return max(matching_groups, key=lambda g: g.get('priority', 0))
+    """Find the first group that matches the filename"""
+    for group in file_groups:
+        if match_file_group(filename, group):
+            return group
+    return None
 
 def prioritize_diffs(diffs: List[Dict], git_root: Path) -> List[Dict]:
     """
     Prioritize diffs based on diffpilot.yaml configuration.
+    First matching group wins (first match in the list).
+    Unmatched files go last.
     
     Args:
         diffs: List of diffs from run_diff_command
@@ -227,12 +223,12 @@ def prioritize_diffs(diffs: List[Dict], git_root: Path) -> List[Dict]:
             diff['tags'] = matching_group.get('tags', [])
             diff['group_title'] = matching_group.get('title', '')
         else:
-            # Default values for unmatched files
+            # Default values for unmatched files - highest priority to go last
             diff['priority'] = 1000000
             diff['tags'] = []
             diff['group_title'] = 'Ungrouped'
             
         enhanced_diffs.append(diff)
     
-    # Sort by priority (highest first)
+    # Sort by priority (lowest first) and then by filename
     return sorted(enhanced_diffs, key=lambda x: (x['priority'], x['filename']))
