@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="grid">
+<div id="diff-grid" class="grid">
     {% for diff in diffs %}
         {% include "diff.html" %}
     {% endfor %}

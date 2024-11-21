@@ -4,6 +4,9 @@ from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from pathlib import Path
 from .core import run_diff_command, load_config
+from sse_starlette.sse import EventSourceResponse
+import asyncio
+import json
 
 app = FastAPI(title="DiffPilot")
 
@@ -57,3 +60,35 @@ async def home(request: Request):
             "diff_command": config.diff_command,
         }
     )
+
+@app.get("/stream")
+async def stream(request: Request):
+    async def event_generator():
+        while True:
+            if await request.is_disconnected():
+                break
+
+            # Get fresh diffs
+            try:
+                diffs = run_diff_command(
+                    request.app.state.config.diff_command,
+                    request.app.state.config.git_project_path
+                )
+                # Render just the diffs part
+                html = templates.get_template("diff_cards.html").render({
+                    "diffs": diffs,
+                    "tags_config": load_config(request.app.state.config.git_project_path).get('tags', {})
+                })
+                yield {
+                    "event": "update",
+                    "data": html
+                }
+            except Exception as e:
+                yield {
+                    "event": "error",
+                    "data": str(e)
+                }
+
+            await asyncio.sleep(request.app.state.config.refresh_interval)
+
+    return EventSourceResponse(event_generator())
