@@ -1,10 +1,11 @@
 import subprocess
 import os
 import logging
-from typing import List, Dict, Union, Optional
+from typing import List, Dict, Union, Optional, Tuple
 from pathlib import Path
 import yaml
 from fnmatch import fnmatch
+import hashlib
 
 logger = logging.getLogger("uvicorn")
 
@@ -102,8 +103,15 @@ def parse_diff(diff_text: str) -> Dict[str, str]:
         'content': cleaned_content
     }
 
-def run_diff_command(command: str, git_root: Path) -> List[Dict[str, str]]:
-    """Run the git diff command and split output by file."""
+def run_diff_command(command: str, git_root: Path) -> Tuple[str, List[Dict[str, str]]]:
+    """
+    Run the git diff command and split output by file.
+    
+    Returns:
+        Tuple of (checksum, diffs) where:
+        - checksum is MD5 of the raw diff output
+        - diffs is the list of parsed and prioritized diffs
+    """
     try:
         # Save current working directory
         original_cwd = os.getcwd()
@@ -131,9 +139,12 @@ def run_diff_command(command: str, git_root: Path) -> List[Dict[str, str]]:
                 f"Diff command failed with return code {process.returncode}"
             )
             
+        # Calculate checksum of raw output
+        checksum = hashlib.md5(stdout.encode()).hexdigest()
+            
         # Split the diff output into per-file chunks
         if not stdout.strip():
-            return []
+            return checksum, []
             
         # Parse all diffs first
         diffs = []
@@ -154,7 +165,7 @@ def run_diff_command(command: str, git_root: Path) -> List[Dict[str, str]]:
                 diffs.append(parsed_diff)
         
         # Prioritize and sort the diffs
-        return prioritize_diffs(diffs, git_root)
+        return checksum, prioritize_diffs(diffs, git_root)
         
     except subprocess.SubprocessError as e:
         logger.error(f"Failed to run diff command: {e}")

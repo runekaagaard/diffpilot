@@ -36,7 +36,7 @@ async def startup_event():
 async def home(request: Request):
     config = request.app.state.config
     try:
-        diffs = run_diff_command(
+        checksum, diffs = run_diff_command(
             config.diff_command,
             config.git_project_path
         )
@@ -63,26 +63,33 @@ async def home(request: Request):
 
 @app.get("/stream")
 async def stream(request: Request):
+    last_checksum = None
+    
     async def event_generator():
+        nonlocal last_checksum
+        
         while True:
             if await request.is_disconnected():
                 break
 
-            # Get fresh diffs
             try:
-                diffs = run_diff_command(
+                # Get fresh diffs with checksum
+                checksum, diffs = run_diff_command(
                     request.app.state.config.diff_command,
                     request.app.state.config.git_project_path
                 )
-                # Render just the diffs part
-                html = templates.get_template("diff_cards.html").render({
-                    "diffs": diffs,
-                    "tags_config": load_config(request.app.state.config.git_project_path).get('tags', {})
-                })
-                yield {
-                    "event": "update",
-                    "data": html
-                }
+                
+                # Only send update if content has changed
+                if checksum != last_checksum:
+                    last_checksum = checksum
+                    html = templates.get_template("diff_cards.html").render({
+                        "diffs": diffs,
+                        "tags_config": load_config(request.app.state.config.git_project_path).get('tags', {})
+                    })
+                    yield {
+                        "event": "update",
+                        "data": html
+                    }
             except Exception as e:
                 yield {
                     "event": "error",
