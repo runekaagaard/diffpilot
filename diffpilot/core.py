@@ -12,25 +12,86 @@ logger = logging.getLogger("uvicorn")
 def get_language(filename: str) -> str:
     """Determine the programming language based on file extension"""
     ext_map = {
-        '.py': 'python',
-        '.js': 'javascript',
-        '.jsx': 'javascript',
-        '.ts': 'typescript',
-        '.tsx': 'typescript',
+        # Web
         '.html': 'markup',
+        '.htm': 'markup',
         '.xml': 'markup',
+        '.svg': 'markup',
         '.css': 'css',
         '.scss': 'scss',
+        '.sass': 'sass',
+        '.less': 'less',
+        '.js': 'javascript',
+        '.jsx': 'jsx',
+        '.ts': 'typescript',
+        '.tsx': 'tsx',
+        
+        # Python
+        '.py': 'python',
+        '.pyi': 'python',
+        '.pyx': 'python',
+        '.pxd': 'python',
+        
+        # Configuration
         '.yaml': 'yaml',
         '.yml': 'yaml',
+        '.toml': 'toml',
+        '.ini': 'ini',
         '.json': 'json',
-        '.md': 'markdown',
+        '.json5': 'json5',
+        '.conf': 'nginx',  # Assuming nginx conf, could be different
+        
+        # Shell/Scripts
         '.sh': 'bash',
         '.bash': 'bash',
+        '.zsh': 'bash',
+        '.fish': 'shell-session',
+        
+        # Documentation
+        '.md': 'markdown',
         '.rst': 'rest',
+        '.adoc': 'asciidoc',
+        '.tex': 'latex',
+        
+        # Programming Languages
+        '.c': 'c',
+        '.h': 'c',
+        '.cpp': 'cpp',
+        '.hpp': 'cpp',
+        '.cs': 'csharp',
+        '.java': 'java',
+        '.kt': 'kotlin',
+        '.kts': 'kotlin',
+        '.go': 'go',
+        '.rs': 'rust',
+        '.rb': 'ruby',
+        '.php': 'php',
+        '.pl': 'perl',
+        '.scala': 'scala',
+        '.swift': 'swift',
+        '.lua': 'lua',
+        
+        # Database
+        '.sql': 'sql',
+        '.pgsql': 'sql',
+        '.mysql': 'sql',
+        
+        # Build/Project
+        '.gradle': 'gradle',
+        '.maven': 'markup',
+        '.dockerfile': 'docker',
+        '.cmake': 'cmake',
+        '.make': 'makefile',
+        
+        # Other
+        '.graphql': 'graphql',
+        '.proto': 'protobuf',
+        '.diff': 'diff',
+        '.patch': 'diff'
     }
+    
     ext = Path(filename).suffix.lower()
-    return ext_map.get(ext, 'diff')
+    return ext_map.get(ext, 'diff')  # Default to 'diff' for unknown extensions
 
 def delete_metadata(diff_text: str) -> str:
     """
