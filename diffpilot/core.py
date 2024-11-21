@@ -1,12 +1,39 @@
 import subprocess
 import os
 import logging
-from typing import List
+from typing import List, Dict
 from pathlib import Path
 
 logger = logging.getLogger("uvicorn")
 
-def run_diff_command(command: str, git_root: Path) -> List[str]:
+def parse_diff(diff_text: str) -> Dict[str, str]:
+    """
+    Parse a single diff text into a structured format.
+    
+    Args:
+        diff_text: The complete diff text for a single file
+        
+    Returns:
+        Dict containing filename and content
+    """
+    lines = diff_text.splitlines(keepends=True)
+    if not lines:
+        return None
+        
+    # First line should be "diff --git a/path/to/file b/path/to/file"
+    first_line = lines[0]
+    if not first_line.startswith('diff --git'):
+        return None
+        
+    # Extract filename from the b/path/to/file part
+    filename = first_line.split()[-1].lstrip('b/')
+    
+    return {
+        'filename': filename,
+        'content': ''.join(lines)
+    }
+
+def run_diff_command(command: str, git_root: Path) -> List[Dict[str, str]]:
     """
     Run the git diff command and split output by file.
     
@@ -15,7 +42,7 @@ def run_diff_command(command: str, git_root: Path) -> List[str]:
         git_root: Path to the git repository root
         
     Returns:
-        List of file diffs, each including its diff header
+        List of dicts containing filename and content for each file in the diff
         
     Raises:
         subprocess.SubprocessError: If the command fails
@@ -48,25 +75,30 @@ def run_diff_command(command: str, git_root: Path) -> List[str]:
             )
             
         # Split the diff output into per-file chunks
-        # A new file diff starts with "diff --git"
         if not stdout.strip():
             return []
             
-        file_diffs = []
+        diffs = []
         current_diff = []
         
         for line in stdout.splitlines(keepends=True):
             if line.startswith('diff --git') and current_diff:
-                # Save the previous file's diff
-                file_diffs.append(''.join(current_diff))
-                current_diff = []
-            current_diff.append(line)
+                # Parse and save the previous file's diff
+                parsed_diff = parse_diff(''.join(current_diff))
+                if parsed_diff:
+                    diffs.append(parsed_diff)
+                # Start new diff
+                current_diff = [line]
+            else:
+                current_diff.append(line)
             
-        # Add the last file's diff
+        # Parse and add the last file's diff
         if current_diff:
-            file_diffs.append(''.join(current_diff))
+            parsed_diff = parse_diff(''.join(current_diff))
+            if parsed_diff:
+                diffs.append(parsed_diff)
             
-        return file_diffs
+        return diffs
         
     except subprocess.SubprocessError as e:
         logger.error(f"Failed to run diff command: {e}")

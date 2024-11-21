@@ -31,7 +31,6 @@ async def startup_event():
 
 @app.get("/")
 async def home(request: Request):
-    # Get diffs using the configured command and git path
     config = request.app.state.config
     try:
         diffs = run_diff_command(
@@ -39,10 +38,7 @@ async def home(request: Request):
             config.git_project_path
         )
     except Exception as e:
-        # If there's an error, we'll pass it to the template
-        diffs = [f"Error running diff command: {str(e)}"]
-
-    print(diffs)
+        diffs = [{'filename': 'Error', 'content': str(e)}]
 
     return templates.TemplateResponse(
         "index.html",
@@ -52,6 +48,6 @@ async def home(request: Request):
             "dark_mode": request.app.state.config.is_dark_mode,
             "refresh_interval": request.app.state.config.refresh_interval,
             "git_project_path": request.app.state.config.git_project_path,
-            "diffs": diffs,  # Add the diffs to the template context
+            "diffs": diffs,
         }
     )
