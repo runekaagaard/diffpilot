@@ -6,6 +6,7 @@ from pathlib import Path
 import uvicorn
 import os
 from diffpilot.main import app
+from diffpilot.core import load_config
 
 def parse_args():
     parser = argparse.ArgumentParser(
@@ -79,6 +80,13 @@ def main():
     if not git_dir.is_dir():
         print(f"Error: Not a git repository: {args.git_project_path}", file=sys.stderr)
         sys.exit(1)
+
+    # Check for config file
+    config = load_config(args.git_project_path)
+    if config.get('file_groups'):
+        print(f"Using config file: {args.git_project_path}/diffpilot.yaml")
+    else:
+        print("No diffpilot.yaml config file found, using default settings")
 
     # Set environment variables for the FastAPI app
     os.environ["DIFFPILOT_DARK_MODE"] = args.dark_mode

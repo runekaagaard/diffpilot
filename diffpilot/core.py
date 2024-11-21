@@ -172,10 +172,12 @@ def load_config(git_root: Path) -> Dict:
     """Load diffpilot.yaml configuration file"""
     config_path = git_root / "diffpilot.yaml"
     if not config_path.exists():
-        return {"file_groups": [], "tags": {}}
+        return {"file_groups": [], "tags": {}, "config_path": None}
     
     with open(config_path) as f:
-        return yaml.safe_load(f)
+        config = yaml.safe_load(f)
+        config['config_path'] = str(config_path)
+        return config
 
 def match_file_group(filename: str, group: Dict) -> bool:
     """Check if filename matches group's glob pattern(s)"""
@@ -226,11 +228,11 @@ def prioritize_diffs(diffs: List[Dict], git_root: Path) -> List[Dict]:
             diff['group_title'] = matching_group.get('title', '')
         else:
             # Default values for unmatched files
-            diff['priority'] = 0
+            diff['priority'] = 1000000
             diff['tags'] = []
             diff['group_title'] = 'Ungrouped'
             
         enhanced_diffs.append(diff)
     
     # Sort by priority (highest first)
-    return sorted(enhanced_diffs, key=lambda x: (-x['priority'], x['filename']))
+    return sorted(enhanced_diffs, key=lambda x: (x['priority'], x['filename']))
