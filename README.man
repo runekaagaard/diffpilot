@@ -27,6 +27,12 @@ OPTIONS
               Example: --diff-command="git diff master...HEAD"
               Example: --diff-command="git diff --cached"
 
+       --diff-local
+              Show diffs for untracked and modified local files
+
+       --diff-branch=BRANCH
+              Compare current branch with specified branch
+
        -h, --help
               Display help information and exit
 
@@ -36,6 +42,11 @@ OPTIONS
 CONFIGURATION
        The configuration file (diffpilot.yaml) uses YAML format with two main 
        sections: file_groups and tags.
+
+       FILE GROUP MATCHING
+       When multiple file groups match a file, the FIRST matching group in the 
+       configuration file will be used for priority, font size, and tags. 
+       Order your file groups from most specific to most general.
 
        file_groups:
               List of group definitions containing:
@@ -90,6 +101,12 @@ EXAMPLES
        Start server for current git project:
               $ diffpilot .
 
+       Show local changes:
+              $ diffpilot . --diff-local
+
+       Compare with main branch:
+              $ diffpilot . --diff-branch main
+
        Start with 5 second refresh:
               $ diffpilot -n 5 .
 
@@ -98,9 +115,6 @@ EXAMPLES
 
        Show staged changes:
               $ diffpilot . --diff-command="git diff --cached"
-
-       Compare with main branch:
-              $ diffpilot . --diff-command="git diff main..."
 
        Start with dark mode:
               $ diffpilot --dark-mode=on /path/to/project

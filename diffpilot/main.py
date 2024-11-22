@@ -3,10 +3,11 @@ from fastapi import FastAPI, Request
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from pathlib import Path
-from .core import run_diff_command, load_config
 from sse_starlette.sse import EventSourceResponse
 import asyncio
 import json
+
+from .core import run_diff_command, load_config
 
 app = FastAPI(title="DiffPilot")
 

@@ -48,6 +48,12 @@ extra_css: "./diffpilot.css"  # Optional
 ## Usage examples
 
 ```bash
+# Show diffs for untracked and modified local files
+diffpilot . --diff-local
+
+# Compare with main branch
+diffpilot . --diff-branch main
+
 # Start with 5 second refresh
 diffpilot -n 5 .
 
@@ -56,9 +62,6 @@ diffpilot -p 8080 /path/to/project
 
 # Show staged changes
 diffpilot . --diff-command="git diff --cached"
-
-# Compare with main branch
-diffpilot . --diff-command="git diff main..."
 
 # Start with dark mode
 diffpilot --dark-mode=on /path/to/project
@@ -71,9 +74,15 @@ diffpilot --dark-mode=on /path/to/project
 -n, --interval=SECONDS     Refresh interval, can be fractional (default: 2.0)
 --dark-mode=on|off        Enable dark mode (default: off)
 --diff-command=COMMAND    Custom diff command
---no-open                 Don't open browser automatically
+--diff-local             Show diffs for untracked and modified local files
+--diff-branch=BRANCH     Compare current branch with specified branch
+--no-open                Don't open browser automatically
 -h, --help               Show help message
 ```
+
+## File Groups Matching
+
+When multiple file groups match a file, the **first matching group** in the configuration file will be used for priority, font size, and tags. Order your file groups from most specific to most general.
 
 ## Tag styling
 

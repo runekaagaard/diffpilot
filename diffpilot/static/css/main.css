@@ -5,6 +5,7 @@ code[class*="language-"], pre[class*="language-"] { background: none; padding: 0
 pre { overflow-x: auto; scrollbar-width: none; }
 pre::-webkit-scrollbar { display: none; }
 
+/* Diff highlighting */
 pre.diff-highlight>code .token.deleted:not(.prefix),pre>code.diff-highlight .token.deleted:not(.prefix) {
     background-color: rgba(255,0,0,.1);
     color: inherit;
