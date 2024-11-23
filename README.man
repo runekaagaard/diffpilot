@@ -19,19 +19,34 @@ OPTIONS
        -n, --interval=SECONDS
               Refresh interval in seconds, can be fractional (default: 2.0)
 
-       --dark-mode=on|off
-              Enable or disable dark mode (default: off)
-
        --diff-command=COMMAND
               Custom diff command (default: "git diff --color=never")
               Example: --diff-command="git diff master...HEAD"
               Example: --diff-command="git diff --cached"
 
        --diff-local
-              Show diffs for untracked and modified local files
+              Shows comprehensive local changes, including:
+              - Untracked files not yet added to git
+              - Modified tracked files in the working directory
+              - Staged changes ready to be committed
+              - Uncommitted changes in tracked files
+              Runs two separate git commands:
+              1. Show diffs for untracked files
+              2. Show diffs for tracked changes in working directory and staging area
 
        --diff-branch=BRANCH
-              Compare current branch with specified branch
+              Shows comprehensive changes in current branch compared to specified branch:
+              - Untracked files not yet added to git
+              - Modified tracked files in the working directory
+              - Staged changes ready to be committed
+              - Uncommitted changes in tracked files
+              - All differences since the branch diverged from the specified branch
+              Runs two separate git commands:
+              1. Show diffs for untracked files
+              2. Show diffs compared to the branch's divergence point
+
+       --window-title=TITLE
+              Set custom window title (default: Diffpilot)
 
        -h, --help
               Display help information and exit
@@ -113,8 +128,8 @@ EXAMPLES
        Show staged changes:
               $ diffpilot . --diff-command="git diff --cached"
 
-       Start with dark mode:
-              $ diffpilot --dark-mode=on /path/to/project
+       Set custom window title:
+              $ diffpilot . --window-title "My Project Diffs"
 
 FILES
        ./diffpilot.yaml

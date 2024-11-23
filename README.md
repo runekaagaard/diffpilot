@@ -48,10 +48,25 @@ extra_css: "./diffpilot.css"  # Optional
 ## Usage examples
 
 ```bash
-# Show diffs for untracked and modified local files
+# Show all changes, including:
+# - Untracked files not yet in git
+# - Modified tracked files
+# - Staged changes
+# - Uncommitted changes
+# Runs two git commands:
+# 1. Show diffs for untracked files
+# 2. Show diffs for tracked changes
 diffpilot . --diff-local
 
-# Compare with main branch
+# Show changes in current branch compared to main, including:
+# - Untracked files not yet in git
+# - Modified tracked files
+# - Staged changes
+# - Uncommitted changes
+# - Differences from the point where current branch diverged from main
+# Runs two git commands:
+# 1. Show diffs for untracked files
+# 2. Show diffs compared to branch divergence point
 diffpilot . --diff-branch main
 
 # Start with 5 second refresh
@@ -63,8 +78,8 @@ diffpilot -p 8080 /path/to/project
 # Show staged changes
 diffpilot . --diff-command="git diff --cached"
 
-# Start with dark mode
-diffpilot --dark-mode=on /path/to/project
+# Set custom window title
+diffpilot . --window-title "My Project Diffs"
 ```
 
 ## Options
@@ -72,10 +87,10 @@ diffpilot --dark-mode=on /path/to/project
 ```
 -p, --port=NUMBER          Web server port (default: 3333)
 -n, --interval=SECONDS     Refresh interval, can be fractional (default: 2.0)
---dark-mode=on|off        Enable dark mode (default: off)
 --diff-command=COMMAND    Custom diff command
---diff-local             Show diffs for untracked and modified local files
---diff-branch=BRANCH     Compare current branch with specified branch
+--diff-local             Show all uncommitted changes (untracked, modified, staged)
+--diff-branch=BRANCH     Show changes in current branch compared to specified branch
+--window-title=TITLE     Set custom window title (default: Diffpilot)
 --no-open                Don't open browser automatically
 -h, --help               Show help message
 ```
