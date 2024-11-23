@@ -2,7 +2,7 @@ file_groups:
   - title: "Python Modules"
     glob: "*.py"
     priority: 1
-    tags: [backend]
+    tags: [Backend]
 
   - title: "Frontend"
     glob: 
@@ -10,26 +10,26 @@ file_groups:
       - "*.css"
       - "*.js"
     priority: 2
-    tags: [frontend]
+    tags: [Frontend]
 
   - title: "Documentation"
     glob: 
       - "*.md"
       - "*.man"
     priority: 3
-    tags: [documentation]
+    tags: [Documentation]
 
   - title: "Other"
     glob: "**"
     priority: 4 
-    tags: [other]
+    tags: [Other]
 
 tags:
-  backend:
+  Backend:
     css_class: "bg-success"
-  frontend:
+  Frontend:
     css_class: "bg-dark"
-  documentation:
+  Documentation:
     css_class: "bg-info"
-  other:
+  Other:
     css_class: "bg-light"

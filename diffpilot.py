@@ -94,13 +94,6 @@ def parse_args():
         help="Refresh interval in seconds, can be fractional (default: 2.0)"
     )
 
-    parser.add_argument(
-        "--dark-mode",
-        choices=["on", "off"],
-        default="on",
-        help="Enable or disable dark mode (default: off)"
-    )
-
     diff_group = parser.add_mutually_exclusive_group()
     diff_group.add_argument(
         "--diff-command",
@@ -126,56 +119,48 @@ def parse_args():
         help="Don't automatically open browser window on startup"
     )
 
-    return parser.parse_args()
+    parser.add_argument(
+        "--window-title",
+        default="Diffpilot",
+        help="Set the window title (default: Diffpilot)"
+    )
 
-async def open_browser():
-    """Opens the browser after the server starts"""
-    if should_open_browser:
-        webbrowser.open(f"http://127.0.0.1:{args.port}")
+    return parser.parse_args()
 
 def main():
     args = parse_args()
     
-    # Validate that the provided path exists
-    if not args.git_project_path.exists():
-        print(f"Error: Path does not exist: {args.git_project_path}", file=sys.stderr)
+    # Validate git project path
+    if not args.git_project_path.exists() or not (args.git_project_path / ".git").is_dir():
+        print(f"Error: Invalid git repository: {args.git_project_path}", file=sys.stderr)
         sys.exit(1)
 
-    # Validate that the provided path is a git repository
-    git_dir = args.git_project_path / ".git"
-    if not git_dir.is_dir():
-        print(f"Error: Not a git repository: {args.git_project_path}", file=sys.stderr)
-        sys.exit(1)
-
-    # Check for config file
-    config = load_config(args.git_project_path)
-    if config.get('file_groups'):
-        print(f"Using config file: {args.git_project_path}/diffpilot.yaml")
-    else:
-        print("No diffpilot.yaml config file found, using default settings")
-
-    # Determine the diff command
+    # Determine diff command
     diff_command = get_diff_command(args, args.git_project_path)
 
-    # Set environment variables for the FastAPI app
-    os.environ["DIFFPILOT_DARK_MODE"] = args.dark_mode
-    os.environ["DIFFPILOT_REFRESH_INTERVAL"] = str(args.interval)
-    os.environ["DIFFPILOT_GIT_PROJECT_PATH"] = str(args.git_project_path.absolute())
-    os.environ["DIFFPILOT_DIFF_COMMAND"] = diff_command
+    # Set configuration in app.extra before running
+    app.extra['config'] = {
+        'interval': args.interval,
+        'git_project_path': str(args.git_project_path.absolute()),
+        'diff_command': diff_command,
+        'port': args.port,
+        'window_title': args.window_title
+    }
 
-    # Store whether to open browser in global scope so the coroutine can access it
-    global should_open_browser
-    should_open_browser = not args.no_open
-
-    # Configure and start uvicorn
+    # Configure uvicorn server
     config = uvicorn.Config(
-        "diffpilot.main:app",
-        host="127.0.0.1",
+        "diffpilot.main:app", 
+        host="127.0.0.1", 
         port=args.port,
         reload=True,
-        reload_dirs=[str(Path(__file__).parent)],
-        # callback_notify=[open_browser]  # Pass as a list of coroutines
+        reload_dirs=[str(Path(__file__).parent)]
     )
+    
+    # Optional browser opening
+    if not args.no_open:
+        webbrowser.open(f"http://127.0.0.1:{args.port}")
+        
+    # Create and run server
     server = uvicorn.Server(config)
     server.run()
 

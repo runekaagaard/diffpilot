@@ -4,7 +4,7 @@
 
 Diffpilot serves a local web interface for viewing git diffs across multiple columns on large monitors. Files can be grouped and sorted based on patterns and priorities, and tagged for better overview. All configuration is done in the diffpilot.yaml file in your git repository.
 
-![Screenshot coming soon]()
+![screenshot](assets/screenshot.png)
 
 ## Installation
 

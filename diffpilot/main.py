@@ -16,33 +16,22 @@ BASE_DIR = Path(__file__).resolve().parent
 templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
 app.mount("/static", StaticFiles(directory=str(BASE_DIR / "static")), name="static")
 
-# Configuration class to hold settings
-class Config:
-    def __init__(self):
-        self.dark_mode = os.getenv("DIFFPILOT_DARK_MODE", "off")
-        self.refresh_interval = float(os.getenv("DIFFPILOT_REFRESH_INTERVAL", "2.0"))
-        self.git_project_path = Path(os.getenv("DIFFPILOT_GIT_PROJECT_PATH", "."))
-        self.diff_command = os.getenv("DIFFPILOT_DIFF_COMMAND", "git diff --color=never")
-
-    @property
-    def is_dark_mode(self):
-        return self.dark_mode == "on"
-
 # Create config on startup
 @app.on_event("startup")
 async def startup_event():
-    app.state.config = Config()
+    # Use the configuration passed during server startup
+    app.state.config = app.extra["config"]
 
 @app.get("/")
 async def home(request: Request):
     config = request.app.state.config
     try:
         checksum, diffs = run_diff_command(
-            config.diff_command,
-            config.git_project_path
+            config['diff_command'],
+            Path(config['git_project_path'])
         )
         # Load config to get tag styles
-        yaml_config = load_config(config.git_project_path)
+        yaml_config = load_config(Path(config['git_project_path']))
         tags_config = yaml_config.get('tags', {})
     except Exception as e:
         diffs = [{'filename': 'Error', 'content': str(e)}]
@@ -52,19 +41,20 @@ async def home(request: Request):
         "index.html",
         {
             "request": request,
-            "title": "DiffPilot",
-            "dark_mode": request.app.state.config.is_dark_mode,
-            "refresh_interval": request.app.state.config.refresh_interval,
-            "git_project_path": request.app.state.config.git_project_path,
+            "title": config['window_title'],
+            "dark_mode": True,
+            "refresh_interval": config['interval'],
+            "git_project_path": config['git_project_path'],
             "diffs": diffs,
             "tags_config": tags_config,
-            "diff_command": config.diff_command,
+            "diff_command": config['diff_command'],
         }
     )
 
 @app.get("/stream")
 async def stream(request: Request):
     last_checksum = None
+    config = request.app.state.config
     
     async def event_generator():
         nonlocal last_checksum
@@ -76,8 +66,8 @@ async def stream(request: Request):
             try:
                 # Get fresh diffs with checksum
                 checksum, diffs = run_diff_command(
-                    request.app.state.config.diff_command,
-                    request.app.state.config.git_project_path
+                    config['diff_command'],
+                    Path(config['git_project_path'])
                 )
                 
                 # Only send update if content has changed
@@ -85,7 +75,7 @@ async def stream(request: Request):
                     last_checksum = checksum
                     html = templates.get_template("diff_cards.html").render({
                         "diffs": diffs,
-                        "tags_config": load_config(request.app.state.config.git_project_path).get('tags', {})
+                        "tags_config": load_config(Path(config['git_project_path'])).get('tags', {})
                     })
                     yield {
                         "event": "update",
@@ -97,6 +87,6 @@ async def stream(request: Request):
                     "data": str(e)
                 }
 
-            await asyncio.sleep(request.app.state.config.refresh_interval)
+            await asyncio.sleep(config['interval'])
 
     return EventSourceResponse(event_generator())
