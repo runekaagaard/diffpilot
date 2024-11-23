@@ -27,22 +27,40 @@ Create a `diffpilot.yaml` in your repository root:
 
 ```yaml
 file_groups:
-  - title: "Django Models"
-    glob: "*/models.py"
-    priority: 10
-    tags: [models, python, core]
-  - title: "Tests"
-    glob: "*/tests/*.py"
-    priority: 8
-    tags: [tests, python]
+  - title: "Python Modules"
+    glob: "*.py"
+    priority: 1
+    tags: [Backend]
+
+  - title: "Frontend"
+    glob: 
+      - "*.html"
+      - "*.css"
+      - "*.js"
+    priority: 2
+    tags: [Frontend]
+
+  - title: "Documentation"
+    glob: 
+      - "*.md"
+      - "*.man"
+    priority: 3
+    tags: [Documentation]
+
+  - title: "Other"
+    glob: "**"
+    priority: 4 
+    tags: [Other]
 
 tags:
-  models:
-    css_class: "bg-primary"
-  python:
-    css_class: "custom-python"
-
-extra_css: "./diffpilot.css"  # Optional
+  Backend:
+    css_class: "bg-success"
+  Frontend:
+    css_class: "bg-dark"
+  Documentation:
+    css_class: "bg-info"
+  Other:
+    css_class: "bg-light"
 ```
 
 ## Usage examples

@@ -74,33 +74,39 @@ CONFIGURATION
               Tag definitions containing:
               - css_class: CSS class name for styling
 
-       extra_css:
-              Optional path to additional CSS file
-
-TAG STYLING
-       Tags are rendered as Bootstrap badges. Each tag has a default 'badge' class
-       and can be customized with additional classes or through custom CSS. For
-       available badge styles see the Badges section at 
-       https://bootswatch.com/flatly/
-
 EXAMPLE CONFIGURATION
        file_groups:
-         - title: "Django Models"
-           glob: "*/models.py"
-           priority: 10
-           tags: [models, python, core]
-         - title: "Tests"
-           glob: "*/tests/*.py"
-           priority: 8
-           tags: [tests, python]
+         - title: "Python Modules"
+           glob: "*.py"
+           priority: 1
+           tags: [Backend]
+         - title: "Frontend"
+           glob: 
+             - "*.html"
+             - "*.css"
+             - "*.js"
+           priority: 2
+           tags: [Frontend]
+         - title: "Documentation"
+           glob: 
+             - "*.md"
+             - "*.man"
+           priority: 3
+           tags: [Documentation]
+         - title: "Other"
+           glob: "**"
+           priority: 4
+           tags: [Other]
 
        tags:
-         models:
-           css_class: "bg-primary"        # Uses Bootstrap's primary background
-         python:
-           css_class: "custom-python"     # Class from custom CSS file
-
-       extra_css: "./diffpilot.css"
+         Backend:
+           css_class: "bg-success"
+         Frontend:
+           css_class: "bg-dark"
+         Documentation:
+           css_class: "bg-info"
+         Other:
+           css_class: "bg-light"
 
 GLOB PATTERNS
        Supports standard glob patterns:
