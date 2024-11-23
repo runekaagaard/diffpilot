@@ -45,7 +45,7 @@ CONFIGURATION
 
        FILE GROUP MATCHING
        When multiple file groups match a file, the FIRST matching group in the 
-       configuration file will be used for priority, font size, and tags. 
+       configuration file will be used for priority, and tags. 
        Order your file groups from most specific to most general.
 
        file_groups:
@@ -53,7 +53,6 @@ CONFIGURATION
               - title: Group display name
               - glob: File matching pattern
               - priority: Sort order (higher numbers first)
-              - font_size: CSS font-size value
               - tags: Array of tag names
 
        tags:
@@ -74,12 +73,10 @@ EXAMPLE CONFIGURATION
          - title: "Django Models"
            glob: "*/models.py"
            priority: 10
-           font_size: "90%"
            tags: [models, python, core]
          - title: "Tests"
            glob: "*/tests/*.py"
            priority: 8
-           font_size: "85%"
            tags: [tests, python]
 
        tags:

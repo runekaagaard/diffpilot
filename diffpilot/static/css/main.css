@@ -17,3 +17,8 @@ pre.diff-highlight>code .token.inserted:not(.prefix),pre>code.diff-highlight .to
     color: inherit;
     display: block
 }
+
+/* Make added +'s green */
+span.token.prefix.inserted {
+    color: #26F972;
+}

@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- No background since favicons typically sit on browser UI -->
+  <text x="1" y="24" font-family="monospace" font-size="24" font-weight="600" letter-spacing="0">
+    <tspan fill="#000000">d</tspan><tspan fill="#0088ff">p</tspan>
+  </text>
+</svg>

@@ -30,12 +30,10 @@ file_groups:
   - title: "Django Models"
     glob: "*/models.py"
     priority: 10
-    font_size: "90%"
     tags: [models, python, core]
   - title: "Tests"
     glob: "*/tests/*.py"
     priority: 8
-    font_size: "85%"
     tags: [tests, python]
 
 tags:
@@ -84,7 +82,7 @@ diffpilot --dark-mode=on /path/to/project
 
 ## File Groups Matching
 
-When multiple file groups match a file, the **first matching group** in the configuration file will be used for priority, font size, and tags. Order your file groups from most specific to most general.
+When multiple file groups match a file, the **first matching group** in the configuration file will be used for priority, and tags. Order your file groups from most specific to most general.
 
 ## Tag styling
 
