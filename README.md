@@ -85,14 +85,14 @@ diffpilot . --window-title "My Project Diffs"
 ## Options
 
 ```
--p, --port=NUMBER          Web server port (default: 3333)
--n, --interval=SECONDS     Refresh interval, can be fractional (default: 2.0)
+-p, --port=NUMBER         Web server port (default: 3333)
+-n, --interval=SECONDS    Refresh interval, can be fractional (default: 2.0)
 --diff-command=COMMAND    Custom diff command
---diff-local             Show all uncommitted changes (untracked, modified, staged)
---diff-branch=BRANCH     Show changes in current branch compared to specified branch
---window-title=TITLE     Set custom window title (default: Diffpilot)
---no-open                Don't open browser automatically
--h, --help               Show help message
+--diff-local              Show all uncommitted changes (untracked, modified, staged)
+--diff-branch=BRANCH      Show changes in current branch compared to specified branch
+--window-title=TITLE      Set custom window title (default: Diffpilot)
+--no-open                 Don't open browser automatically
+-h, --help                Show help message
 ```
 
 ## File Groups Matching
