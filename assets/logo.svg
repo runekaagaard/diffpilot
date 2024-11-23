@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 120">
+  <!-- Background with subtle rounded corners -->
+  <rect x="10" y="10" width="300" height="100" rx="12" fill="#ffffff" filter="drop-shadow(0 1px 2px rgba(0,0,0,0.1))"/>
+  
+  <!-- Main text -->
+  <text x="40" y="65" font-family="monospace" font-size="42" font-weight="600" letter-spacing="0">
+    <tspan fill="#000000">diff</tspan><tspan fill="#0088ff">pilot</tspan>
+  </text>
+  
+  <!-- Simplified tagline -->
+  <text x="40" y="85" font-family="monospace" font-size="14" fill="#666666">
+    multi-column git diff viewer
+  </text>
+</svg>
