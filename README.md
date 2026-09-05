@@ -8,8 +8,17 @@ Diffpilot serves a local web interface for viewing git diffs across multiple col
 
 ## Installation
 
+Diffpilot is not on PyPI yet - install directly from GitHub:
+
 ```bash
-pip install diffpilot
+pip install git+https://github.com/runekaagaard/diffpilot.git
+```
+
+Or clone and install locally (works offline once cloned):
+
+```bash
+git clone https://github.com/runekaagaard/diffpilot.git
+cd diffpilot && pip install .
 ```
 
 ## Quick start
